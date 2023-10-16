@@ -58,6 +58,9 @@ function App() {
                 variant="filled"
                 value={query}
                 onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  e.key === "Enter" && handleQuery();
+                }}
               />
               <Button
                 variant="outlined"
