@@ -5,14 +5,16 @@ import { LocationData } from "./types";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Button, TextField } from "@mui/material";
+import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 
 function App() {
   const darkTheme = createTheme({
     palette: {
-      mode: "light",
+      mode: "dark",
     },
   });
 
+  const [showTemperature, setShowTemperature] = React.useState(false);
   const [temperature, setTemperature] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [queryResults, setQueryResults] = React.useState([]);
@@ -26,6 +28,7 @@ function App() {
     getQueryLocation(query).then((data: any) => {
       setQueryResults(data);
       setShowQueryResults(true);
+      setShowTemperature(false);
     });
   };
 
@@ -38,6 +41,8 @@ function App() {
       getWeather(latitude, longitude).then((data: any) => {
         setTemperature(data.temperature);
       });
+      setShowQueryResults(false);
+      setShowTemperature(true);
     }
   };
 
@@ -47,68 +52,46 @@ function App() {
         <CssBaseline>
           <div className="App">
             <div className="weather-container">
-              <div className="query-container">
-                <TextField
-                  id="filled-basic"
-                  label="Location"
-                  variant="filled"
-                  value={query}
-                  onChange={handleInputChange}
-                />
-                <div>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      handleQuery();
-                    }}
-                  >
-                    Submit
-                  </Button>
-                </div>
-              </div>
+              <TextField
+                id="filled-basic"
+                label="Location"
+                variant="filled"
+                value={query}
+                onChange={handleInputChange}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  handleQuery();
+                }}
+              >
+                Submit
+              </Button>
 
               {showQueryResults && (
-                <div className="results-container">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Area</th>
-                        <th>Country</th>
-                        <th>Latitude</th>
-                        <th>Longitude</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {queryResults.map((result: any) => {
-                        return (
-                          <tr key={result.id}>
-                            <td>{result.name}</td>
-                            <td>{result.area}</td>
-                            <td>{result.country}</td>
-                            <td>{result.latitude}</td>
-                            <td>{result.longitude}</td>
-                            <td>
-                              <button
-                                onClick={() =>
-                                  handleLocationSelected(result.id)
-                                }
-                              >
-                                Select
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                <List disablePadding>
+                  {queryResults.map((result: any) => {
+                    return (
+                      <ListItem key={result.id}>
+                        <ListItemButton
+                          onClick={() => handleLocationSelected(result.id)}
+                        >
+                          <ListItemText
+                            primary={result.name}
+                            secondary={result.country}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+                </List>
               )}
 
-              <div className="results-container">
-                <div>Temperature: {temperature}</div>
-              </div>
+              {showTemperature && (
+                <div className="results-container">
+                  <div>Temperature: {temperature}</div>
+                </div>
+              )}
             </div>
           </div>
         </CssBaseline>
